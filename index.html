@@ -1,99 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PENGIRIM BUG WA</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background-image: url('https://files.catbox.moe/l1buy6.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: white;
-            font-family: sans-serif;
-            text-align: center;
-            padding-top: 50px;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 5px black;
-        }
-        button {
-            background-color: red;
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            margin: 10px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0,0,0,0.7);
-        }
-        button:hover {
-            background-color: darkred;
-        }
-        .note {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0;
-            color: #fff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Side Scroll Game</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: linear-gradient(to bottom, #111, #333);
+      border: 2px solid #fff;
+    }
+
+    #gameOver {
+      color: red;
+      font-size: 3em;
+      font-family: sans-serif;
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      top: 40%;
+      display: none;
+    }
+
+    #controls {
+      color: white;
+      text-align: center;
+      font-family: sans-serif;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
+<canvas id="game" width="800" height="400"></canvas>
+<div id="gameOver">GAME OVER</div>
+<div id="controls">Gunakan Tombol ← → untuk gerak, ↑ untuk lompat</div>
 
-    <div>
-        <h1>PENGIRIM BUG WHATSAPP</h1>
+<script>
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
 
-        <button onclick="kirimBug('no')">BUG NO</button>
-        <button onclick="kirimBug('hard')">HARD BUG</button>
-        <button onclick="kirimBug('ganas')">HARD BUG GANAS</button>
-    </div>
+  let player = {
+    x: 50,
+    y: 300,
+    w: 40,
+    h: 40,
+    color: "white",
+    dy: 0,
+    jumping: false
+  };
 
-    <p class="note">
-        NOTE: Web ini dibuat untuk membantu Anda <strong>ngebug orang yang telah menscam kalian</strong>.<br>
-        Tolong gunakan dengan baik. Terima kasih 🙏
-    </p>
+  let enemy = {
+    x: 800,
+    y: 300,
+    w: 40,
+    h: 40,
+    color: "red",
+    speed: 4
+  };
 
-    <!-- Audio -->
-    <audio id="bugAudio" loop>
-        <source src="https://files.catbox.moe/tfqzkm.mp3" type="audio/mpeg">
-    </audio>
+  let keys = {};
+  document.addEventListener("keydown", e => keys[e.key] = true);
+  document.addEventListener("keyup", e => keys[e.key] = false);
 
-    <script>
-        const target = "6281234567890"; // GANTI NOMOR TARGET
+  function drawRect(obj) {
+    ctx.fillStyle = obj.color;
+    ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+  }
 
-        const pesan = {
-            no: encodeURIComponent('⚠️ BUG RINGAN ‼️\n🧠🧠🧠\nCek sistem WhatsApp kamu 😈'),
-            hard: encodeURIComponent('💥💣 HARD BUG 💣💥\n🔥🔥🔥\nBersihkan WA kamu sekarang!!!'),
-            ganas: encodeURIComponent('☠️☠️☠️ HARD BUG GANAS ☠️☠️☠️\n🧨🧨🧨\nWA KAMU AKAN NGELAG PARAH ‼️‼️‼️')
-        };
+  function update() {
+    // Gravity
+    if (player.y < 300) {
+      player.dy += 1.2;
+      player.jumping = true;
+    } else {
+      player.dy = 0;
+      player.jumping = false;
+      player.y = 300;
+    }
 
-        const audio = document.getElementById("bugAudio");
+    // Controls
+    if (keys["ArrowRight"]) player.x += 5;
+    if (keys["ArrowLeft"]) player.x -= 5;
+    if (keys["ArrowUp"] && !player.jumping) {
+      player.dy = -18;
+      player.jumping = true;
+    }
 
-        function kirimBug(tipe) {
-            try {
-                audio.volume = 1.0;
-                audio.play().catch(() => {
-                    alert("Ketuk layar dulu agar suara aktif.");
-                });
-            } catch (err) {
-                console.error("Audio gagal diputar:", err);
-            }
+    player.y += player.dy;
 
-            setTimeout(() => {
-                window.location.href = `https://wa.me/${target}?text=${pesan[tipe]}`;
-            }, 1000);
-        }
-    </script>
+    // Batas layar
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
+
+    // Enemy movement
+    enemy.x -= enemy.speed;
+    if (enemy.x + enemy.w < 0) {
+      enemy.x = 800 + Math.random() * 100;
+    }
+
+    // Collision
+    if (
+      player.x < enemy.x + enemy.w &&
+      player.x + player.w > enemy.x &&
+      player.y < enemy.y + enemy.h &&
+      player.y + player.h > enemy.y
+    ) {
+      document.getElementById("gameOver").style.display = "block";
+      cancelAnimationFrame(anim);
+      return;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawRect(player);
+    drawRect(enemy);
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    anim = requestAnimationFrame(gameLoop);
+  }
+
+  let anim = requestAnimationFrame(gameLoop);
+</script>
 </body>
 </html>
